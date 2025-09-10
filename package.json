@@ -1,0 +1,25 @@
+{
+  "name": "mercury-icons",
+  "version": "1.0.0",
+  "description": "pack of icons for Mercury Development website",
+  "keywords": [
+    "icons",
+    "svg",
+    "ui-kit"
+  ],
+  "homepage": "https://github.com/rebenok-beep/mercury-icons#readme",
+  "bugs": {
+    "url": "https://github.com/rebenok-beep/mercury-icons/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rebenok-beep/mercury-icons.git"
+  },
+  "license": "ISC",
+  "author": "Ilia Rebenok",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
