@@ -61,7 +61,7 @@ function generateReactComponent(iconName, svgContent, size, iconDirName) {
 
   const processedSvgContent = isColorful
     ? svgInnerContent
-    : svgInnerContent.replace(/fill="#[^"]*"/g, `fill={color}`);
+    : svgInnerContent.replace(/fill="#[^"]*"/g, `fill="\${color}"`);
 
   return `import React from 'react';
 
@@ -74,7 +74,6 @@ export const ${iconName} = ({
     width: ${size},
     height: ${size},
     viewBox: "${attributes.viewBox}",
-    fill: "none",
     xmlns: "http://www.w3.org/2000/svg",
     className: className,
     style: style,
@@ -84,32 +83,6 @@ export const ${iconName} = ({
     )}\` }
   });
 };
-
-export default ${iconName};
-`;
-}
-
-/**
- * Generate SVG string function template
- */
-function generateSvgStringFunction(iconName, svgContent, size, iconDirName) {
-  const attributes = extractSvgAttributes(svgContent);
-  const svgInnerContent = extractSvgContent(svgContent);
-  const isColorful = iconDirName.startsWith("colorful-");
-
-  const processedSvgContent = isColorful
-    ? svgInnerContent
-    : svgInnerContent.replace(/fill="#[^"]*"/g, `fill="\${color}"`);
-
-  return `export function ${iconName}(options = {}) {
-  const { ${isColorful ? "" : "color = '#FAFBFB'"} } = options;
-  
-  return \`<svg width="${size}" height="${size}" viewBox="${
-    attributes.viewBox
-  }" fill="none" xmlns="http://www.w3.org/2000/svg">
-    ${processedSvgContent}
-  </svg>\`;
-}
 
 export default ${iconName};
 `;
@@ -151,21 +124,9 @@ async function processIcon(iconDir) {
       size,
       iconName
     );
-    const svgStringFunction = generateSvgStringFunction(
-      componentName,
-      svgContent,
-      size,
-      iconName
-    );
 
     // Write React component
     await fs.writeFile(path.join(distIconDir, `${size}.js`), reactComponent);
-
-    // Write SVG string function
-    await fs.writeFile(
-      path.join(distIconDir, `${size}.svg.js`),
-      svgStringFunction
-    );
   }
 
   return {
@@ -186,13 +147,10 @@ async function generateIndexFiles(icons) {
     .map((icon) => {
       const imports = [];
 
-      // Export both React components and SVG string functions
+      // Export React components
       for (const size of icon.sizes) {
         imports.push(
           `export { ${icon.pascalName}${size} } from './icons/${icon.name}/${size}.js';`
-        );
-        imports.push(
-          `export { ${icon.pascalName}${size} as ${icon.pascalName}${size}Svg } from './icons/${icon.name}/${size}.svg.js';`
         );
       }
 
@@ -203,18 +161,15 @@ async function generateIndexFiles(icons) {
   const esmIndex = `${esmImports}
 `;
 
-  // Generate TypeScript definitions (React components AND SVG functions)
+  // Generate TypeScript definitions (React components)
   const typeExports = icons
     .map((icon) => {
       const exports = [];
 
-      // Export both React components and SVG string functions
+      // Export React components
       for (const size of icon.sizes) {
         exports.push(
           `export declare const ${icon.pascalName}${size}: React.FC<${icon.pascalName}${size}Props>;`
-        );
-        exports.push(
-          `export declare const ${icon.pascalName}${size}Svg: (options?: ${icon.pascalName}${size}Options) => string;`
         );
       }
 
@@ -227,13 +182,10 @@ async function generateIndexFiles(icons) {
     .map((icon) => {
       const exports = [];
 
-      // Export both React component props and SVG function interfaces
+      // Export React component props interfaces
       for (const size of icon.sizes) {
         exports.push(
           `export interface ${icon.pascalName}${size}Props extends IconProps {}`
-        );
-        exports.push(
-          `export interface ${icon.pascalName}${size}Options extends SvgOptions {}`
         );
       }
 
@@ -249,9 +201,6 @@ export interface IconProps {
   style?: React.CSSProperties;
 }
 
-export interface SvgOptions {
-  color?: string;
-}
 
 ${interfaceExports}
 
