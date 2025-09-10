@@ -65,32 +65,24 @@ function generateReactComponent(iconName, svgContent, size, iconDirName) {
 
   return `import React from 'react';
 
-export interface ${iconName}Props {
-  ${
-    isColorful ? "// color prop disabled for colorful icons" : "color?: string;"
-  }
-  className?: string;
-  style?: React.CSSProperties;
-}
-
-export const ${iconName}: React.FC<${iconName}Props> = ({ 
+export const ${iconName} = ({ 
   ${isColorful ? "// color = '#FAFBFB'," : "color = '#FAFBFB',"}
   className,
   style 
 }) => {
-  return (
-    <svg
-      width={${size}}
-      height={${size}}
-      viewBox="${attributes.viewBox}"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      style={style}
-    >
-      ${processedSvgContent}
-    </svg>
-  );
+  return React.createElement('svg', {
+    width: ${size},
+    height: ${size},
+    viewBox: "${attributes.viewBox}",
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    className: className,
+    style: style,
+    dangerouslySetInnerHTML: { __html: \`${processedSvgContent.replace(
+      /`/g,
+      "\\`"
+    )}\` }
+  });
 };
 
 export default ${iconName};
@@ -167,7 +159,7 @@ async function processIcon(iconDir) {
     );
 
     // Write React component
-    await fs.writeFile(path.join(distIconDir, `${size}.tsx`), reactComponent);
+    await fs.writeFile(path.join(distIconDir, `${size}.js`), reactComponent);
 
     // Write SVG string function
     await fs.writeFile(
@@ -197,7 +189,7 @@ async function generateIndexFiles(icons) {
       // Export both React components and SVG string functions
       for (const size of icon.sizes) {
         imports.push(
-          `export { ${icon.pascalName}${size} } from './icons/${icon.name}/${size}.tsx';`
+          `export { ${icon.pascalName}${size} } from './icons/${icon.name}/${size}.js';`
         );
         imports.push(
           `export { ${icon.pascalName}${size} as ${icon.pascalName}${size}Svg } from './icons/${icon.name}/${size}.svg.js';`
