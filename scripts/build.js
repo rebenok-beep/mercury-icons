@@ -194,8 +194,11 @@ async function generateIndexFiles(icons) {
     .map((icon) => {
       const imports = [];
 
-      // Export only SVG string functions for NPM compatibility
+      // Export both React components and SVG string functions
       for (const size of icon.sizes) {
+        imports.push(
+          `export { ${icon.pascalName}${size} } from './icons/${icon.name}/${size}';`
+        );
         imports.push(
           `export { ${icon.pascalName}${size} as ${icon.pascalName}${size}Svg } from './icons/${icon.name}/${size}.svg.js';`
         );
@@ -208,13 +211,16 @@ async function generateIndexFiles(icons) {
   const esmIndex = `${esmImports}
 `;
 
-  // Generate TypeScript definitions (SVG functions only)
+  // Generate TypeScript definitions (React components AND SVG functions)
   const typeExports = icons
     .map((icon) => {
       const exports = [];
 
-      // Only export SVG string functions
+      // Export both React components and SVG string functions
       for (const size of icon.sizes) {
+        exports.push(
+          `export declare const ${icon.pascalName}${size}: React.FC<${icon.pascalName}${size}Props>;`
+        );
         exports.push(
           `export declare const ${icon.pascalName}${size}Svg: (options?: ${icon.pascalName}${size}Options) => string;`
         );
@@ -229,8 +235,11 @@ async function generateIndexFiles(icons) {
     .map((icon) => {
       const exports = [];
 
-      // Only export SVG function interfaces
+      // Export both React component props and SVG function interfaces
       for (const size of icon.sizes) {
+        exports.push(
+          `export interface ${icon.pascalName}${size}Props extends IconProps {}`
+        );
         exports.push(
           `export interface ${icon.pascalName}${size}Options extends SvgOptions {}`
         );
@@ -240,7 +249,15 @@ async function generateIndexFiles(icons) {
     })
     .join("\n");
 
-  const typeDefinitions = `export interface SvgOptions {
+  const typeDefinitions = `import React from 'react';
+
+export interface IconProps {
+  color?: string;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export interface SvgOptions {
   color?: string;
 }
 
