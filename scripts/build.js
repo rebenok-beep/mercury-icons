@@ -197,7 +197,7 @@ async function generateIndexFiles(icons) {
       // Export both React components and SVG string functions
       for (const size of icon.sizes) {
         imports.push(
-          `export { ${icon.pascalName}${size} } from './icons/${icon.name}/${size}';`
+          `export { ${icon.pascalName}${size} } from './icons/${icon.name}/${size}.tsx';`
         );
         imports.push(
           `export { ${icon.pascalName}${size} as ${icon.pascalName}${size}Svg } from './icons/${icon.name}/${size}.svg.js';`
