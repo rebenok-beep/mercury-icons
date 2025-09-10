@@ -1,11 +1,15 @@
 {
   "name": "mercury-icons",
   "version": "1.0.0",
-  "description": "pack of icons for Mercury Development website",
+  "description": "A comprehensive pack of SVG icons for Mercury Development projects",
   "keywords": [
     "icons",
     "svg",
-    "ui-kit"
+    "ui-kit",
+    "mercury",
+    "react",
+    "components",
+    "design-system"
   ],
   "homepage": "https://github.com/rebenok-beep/mercury-icons#readme",
   "bugs": {
@@ -15,11 +19,44 @@
     "type": "git",
     "url": "git+https://github.com/rebenok-beep/mercury-icons.git"
   },
-  "license": "ISC",
+  "license": "MIT",
   "author": "Ilia Rebenok",
   "type": "module",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
   "scripts": {
+    "build": "node scripts/build.js",
+    "dev": "node scripts/build.js --watch",
+    "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "fs-extra": "^11.1.1",
+    "glob": "^10.3.10",
+    "chokidar": "^3.5.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
